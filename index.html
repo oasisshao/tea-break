@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tea Break Countdown</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    font-family:"Segoe UI","Microsoft JhengHei",sans-serif;
+    background:#F7F7F2;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    position:relative;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+    radial-gradient(circle at 0% 0%, #F4E287 0 260px, transparent 260px),
+    radial-gradient(circle at 100% 0%, #EFC8DA 0 240px, transparent 240px),
+    radial-gradient(circle at 0% 100%, #53C6C4 0 220px, transparent 220px),
+    radial-gradient(circle at 100% 100%, #F4E287 0 180px, transparent 180px);
+    z-index:-1;
+}
+
+.container{
+    width:min(1200px,94%);
+    background:white;
+    border-radius:38px;
+    padding:45px 50px;
+    text-align:center;
+    box-shadow:0 20px 80px rgba(0,0,0,.08);
+}
+
+.title{
+    color:#53C6C4;
+    font-size:clamp(4rem,7vw,6.5rem);
+    font-weight:800;
+    margin-bottom:10px;
+}
+
+.info{
+    margin-bottom:20px;
+    font-size:2.2rem;
+    color:#777;
+    font-weight:700;
+    line-height:1.4;
+}
+
+#timer{
+    font-size:clamp(10rem,25vw,18rem);
+    font-weight:900;
+    line-height:.9;
+    letter-spacing:-8px;
+    color:#53C6C4;
+    margin:35px 0;
+    font-variant-numeric:tabular-nums;
+    text-shadow:0 10px 28px rgba(83,198,196,.18);
+    transition:.3s;
+}
+
+#timer.warning{
+    color:#F25F5C !important;
+    animation:pulse 1.5s infinite;
+    text-shadow:none;
+}
+
+@keyframes pulse{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.02);}
+}
+
+#countdownNotice{
+    height:80px;
+    font-size:2.4rem;
+    font-weight:900;
+    color:#F25F5C;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+#finished{
+    display:none;
+    margin-top:10px;
+    color:#FF6B6B;
+    font-weight:800;
+    font-size:2rem;
+}
+
+.controls{
+    margin-top:15px;
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+button{
+    width:190px;
+    height:62px;
+    border:none;
+    border-radius:20px;
+    font-size:1.05rem;
+    font-weight:800;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+}
+
+button:active{
+    transform:scale(.98);
+}
+
+#startBtn{
+    background:#53C6C4;
+    color:white;
+}
+
+#resetBtn{
+    background:#F4E287;
+    color:#424242;
+}
+
+.slider-wrap{
+    margin-top:45px;
+}
+
+#slider{
+    width:100%;
+    appearance:none;
+    background:none;
+}
+
+#slider::-webkit-slider-runnable-track{
+    height:16px;
+    border-radius:999px;
+    background:
+    linear-gradient(
+        to right,
+        #53C6C4 0%,
+        #53C6C4 var(--progress,100%),
+        #E5E5E5 var(--progress,100%),
+        #E5E5E5 100%
+    );
+}
+
+#slider::-webkit-slider-thumb{
+    appearance:none;
+    width:34px;
+    height:34px;
+    margin-top:-9px;
+    border-radius:50%;
+    background:white;
+    border:5px solid #53C6C4;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+    cursor:pointer;
+}
+
+.marks{
+    margin-top:14px;
+    display:flex;
+    justify-content:space-between;
+    color:#777;
+    font-size:.9rem;
+}
+
+.music{
+    margin-top:30px;
+}
+
+#musicBtn{
+    width:auto;
+    padding:0 25px;
+    background:#EFC8DA;
+    color:#424242;
+}
+
+@media(max-width:900px){
+
+    .container{
+        padding:30px;
+    }
+
+    .info{
+        font-size:1.3rem;
+    }
+
+    #timer{
+        font-size:7rem;
+    }
+
+    #countdownNotice{
+        font-size:1.6rem;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="title">
+        Tea Break
+    </div>
+
+    <div class="info">
+        🍵 Sip • Relax • Recharge
+    </div>
+
+    <div id="timer">
+        10:00
+    </div>
+
+    <div id="countdownNotice"></div>
+
+    <div id="finished">
+        🍵 Tea Break Is Over!
+    </div>
+
+    <div class="controls">
+        <button id="startBtn">START</button>
+        <button id="resetBtn">RESET</button>
+    </div>
+
+    <div class="slider-wrap">
+
+        <input
+            type="range"
+            id="slider"
+            min="0"
+            max="600"
+            value="600">
+
+        <div class="marks">
+            <span>0</span>
+            <span>2</span>
+            <span>4</span>
+            <span>6</span>
+            <span>8</span>
+            <span>10</span>
+        </div>
+
+    </div>
+
+    <div class="music">
+        <button id="musicBtn">
+            🎵 PLAY MUSIC
+        </button>
+    </div>
+
+</div>
+
+./cafe_music.mp3
+</audio>
+
+<script>
+
+const DEFAULT_TIME = 600;
+
+let remaining = DEFAULT_TIME;
+let running = false;
+let endTime = null;
+
+const timer = document.getElementById("timer");
+const slider = document.getElementById("slider");
+
+function format(seconds){
+
+    seconds = Math.max(0, Math.ceil(seconds));
+
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+
+    return String(m).padStart(2,"0") +
+           ":" +
+           String(s).padStart(2,"0");
+}
+
+function updateDisplay(){
+
+    timer.textContent = format(remaining);
+
+    slider.value = Math.floor(remaining);
+
+    const progress =
+        (remaining / DEFAULT_TIME) * 100;
+
+    slider.style.setProperty(
+        "--progress",
+        progress + "%"
+    );
+
+    const notice =
+        document.getElementById("countdownNotice");
+
+    if(
+        remaining <= 300 &&
+        remaining > 0
+    ){
+
+        timer.classList.add("warning");
+
+        notice.innerHTML =
+            "⏳ Final 5 Minutes";
+
+    }
+    else{
+
+        timer.classList.remove("warning");
+
+        notice.innerHTML = "";
+
+    }
+}
+
+function tick(){
+
+    if(!running) return;
+
+    remaining =
+        Math.max(
+            0,
+            (endTime - Date.now()) / 1000
+        );
+
+    updateDisplay();
+
+    if(remaining <= 0){
+
+        running = false;
+
+        document.getElementById("finished").style.display = "block";
+
+        document.getElementById("startBtn").innerText = "START";
+    }
+}
+
+setInterval(tick,200);
+
+document.getElementById("startBtn").onclick = function(){
+
+    if(!running){
+
+        endTime =
+            Date.now() +
+            remaining * 1000;
+
+        running = true;
+
+        document.getElementById("finished").style.display = "none";
+
+        this.innerText = "PAUSE";
+
+    }else{
+
+        remaining =
+            Math.max(
+                0,
+                (endTime - Date.now()) / 1000
+            );
+
+        running = false;
+
+        this.innerText = "START";
+    }
+};
+
+document.getElementById("resetBtn").onclick = function(){
+
+    running = false;
+
+    remaining = DEFAULT_TIME;
+
+    updateDisplay();
+
+    document.getElementById("finished").style.display = "none";
+
+    document.getElementById("startBtn").innerText = "START";
+};
+
+slider.addEventListener("input", function(){
+
+    if(running) return;
+
+    remaining = Number(this.value);
+
+    updateDisplay();
+});
+
+const music = document.getElementById("bgMusic");
+
+music.volume = 0.35;
+
+document.getElementById("musicBtn").onclick = async () => {
+
+    try{
+
+        if(music.paused){
+
+            await music.play();
+
+            document.getElementById("musicBtn").textContent =
+                "🔊 MUSIC ON";
+
+        }else{
+
+            music.pause();
+
+            document.getElementById("musicBtn").textContent =
+                "🎵 PLAY MUSIC";
+        }
+
+    }catch(e){
+
+        alert("請確認 cafe_music.mp3 已經上傳到 GitHub");
+    }
+};
+
+updateDisplay();
+
+</script>
+
+</body>
+</html>
